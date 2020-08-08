@@ -41,6 +41,19 @@ def render_content(tab):
         ])
     elif tab == 'tab-3':
         return html.Div([
+
+            html.Div([
+                dcc.RangeSlider(
+                    id='my-range-slider',
+                    min=0,
+                    max=100,
+                    step=1,
+                    value=[0, 100],
+                    marks={i: '{}'.format(i) for i in range(0,101,5)},
+
+                ),
+                html.Div(id='output-container-range-slider')
+            ]),
             html.Label('Clase:'),
             dcc.Dropdown(
                 id="MM",
@@ -62,14 +75,29 @@ def render_content(tab):
             )
         ])
 
+
+# Slider -> count graph
+@app.callback(
+    dash.dependencies.Output('output-container-range-slider', 'children'),
+    [dash.dependencies.Input('my-range-slider', 'value')])
+def update_output(value):
+        #filtered_df = df[df.Age >=  && df.Age <= ]
+
+    return 'You have selected "{}"'.format(value)
+
+
 @app.callback(
     Output(component_id='graphtitanic', component_property='figure'),
-    [Input(component_id='MM', component_property='value')]
+    [Input(component_id='MM', component_property='value'),
+    Input(component_id='my-range-slider', component_property='value'),
+    
+    ]
 )
-def update_figure(selected_class):
+def update_figure(selected_class,year_slider):
     filtered_df = df[df.Pclass == selected_class]
-    print(filtered_df)
-    fig = px.histogram(filtered_df, x="Age", color="Sex", barmode="group")
+    fitrado_edad = filtered_df[(filtered_df["Age"]>=int(year_slider[0])) & (filtered_df["Age"]<=int(year_slider[1]))]
+    print(fitrado_edad)
+    fig = px.histogram(fitrado_edad, x="Age", color="Sex", barmode="group")
     fig.update_layout(transition_duration=500)
     return fig
 
