@@ -34,8 +34,12 @@ fig = go.Figure(data=[go.Pie(
                     ]
                 )
 
-
-
+ages_histogram = px.histogram(df, 
+                   x="Age",
+                   color="Sex"
+                   )
+                
+                
 @app.callback(Output('tabs-content', 'children'),
               [Input('tabs', 'value')])
 def render_content(tab):
@@ -46,7 +50,10 @@ def render_content(tab):
             )
     elif tab == 'tab-2':
         return html.Div([
-            html.H3('Tab content 2')
+             dcc.Graph(
+                id='ages_histogram',
+                figure=ages_histogram
+            )
         ])
 
 app.layout = html.Div(children=[
@@ -65,9 +72,6 @@ app.layout = html.Div(children=[
     html.Div(id='tabs-content'),
 
 ])
-
-
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)
